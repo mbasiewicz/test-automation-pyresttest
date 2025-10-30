@@ -1,0 +1,31 @@
+name: CI Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  pyresttest:
+    name: PyRestTest API Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Start Docker services
+        run: |
+          docker compose up -d
+          sleep 15
+
+      - name: Run pyresttest
+        run: |
+          docker compose run --rm backend ./tests.sh
+
+      - name: Stop Docker services
+        if: always()
+        run: docker compose down
